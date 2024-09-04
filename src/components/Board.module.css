@@ -1,0 +1,31 @@
+.board {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    place-content: center;
+}
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+    place-content: center;
+}
+
+.item {
+    width: 5rem;
+    height: 5rem;
+    border: 1px solid grey;
+    display: grid;
+    text-align: center;
+    place-content: center;
+}
+
+.white {
+    background-color: white;
+    color: black;
+}
+
+.black {
+    background-color: black;
+}
