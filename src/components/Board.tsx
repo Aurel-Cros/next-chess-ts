@@ -3,7 +3,7 @@ import { BoardStateContext } from "@/context/BoardState";
 import type { BoardContextType, BoardPositionsType } from "@/types/ChessTypes.d.ts";
 import { PiecesEnum } from "@/types/ChessTypes.js";
 import { useContext } from "react";
-import { Bishop, Pawn, Rook } from "./Piece.js";
+import { Bishop, King, Knight, Pawn, Queen, Rook } from "./Piece.js";
 
 export default function Board() {
     const boardState: BoardContextType = useContext(BoardStateContext);
@@ -21,12 +21,12 @@ export function newBoardPositions(playerIsWhite: boolean = true): BoardPositions
             {
                 column: [
                     new Rook(false),
-                    PiecesEnum.BlackKnight,
+                    new Knight(false),
                     new Bishop(false),
-                    PiecesEnum.BlackKing,
-                    PiecesEnum.BlackQueen,
+                    new King(false),
+                    new Queen(false),
                     new Bishop(false),
-                    PiecesEnum.BlackKnight,
+                    new Knight(false),
                     new Rook(false),
                 ]
             },
@@ -61,16 +61,19 @@ export function newBoardPositions(playerIsWhite: boolean = true): BoardPositions
             {
                 column: [
                     new Rook(true),
-                    PiecesEnum.WhiteKnight,
+                    new Knight(true),
                     new Bishop(true),
-                    PiecesEnum.WhiteKing,
-                    PiecesEnum.WhiteQueen,
+                    new King(true),
+                    new Queen(true),
                     new Bishop(true),
-                    PiecesEnum.WhiteKnight,
+                    new Knight(true),
                     new Rook(true),
                 ]
             },
         ]
     };
+    if (!playerIsWhite)
+        board.row.reverse();
+
     return board;
 }
