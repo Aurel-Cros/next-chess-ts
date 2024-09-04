@@ -1,7 +1,7 @@
 'use client';
 
-import { newBoardPositions } from "@/components/Board.jsx";
 import type { BoardContextType } from "@/types/ChessTypes.d.ts";
+import newBoardPositions from "@/utils/resetBoardPositions.ts";
 import { createContext, type Context } from "react";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({

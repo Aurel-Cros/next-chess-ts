@@ -1,4 +1,5 @@
-import { MoveType, PiecesEnum, PieceType } from "@/types/ChessTypes.d.js";
+import type { MoveType, PieceType } from "@/types/ChessTypes.d.ts";
+import { PiecesEnum } from '../types/enums.ts';
 
 abstract class Piece implements PieceType {
     public name: string = '';
@@ -15,9 +16,6 @@ abstract class Piece implements PieceType {
 
     die() {
         // Move this piece in graveyard
-    }
-    getMoves(): [number, number] {
-        return [0, 0];
     }
 }
 
