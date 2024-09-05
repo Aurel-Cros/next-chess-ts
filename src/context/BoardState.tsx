@@ -4,7 +4,6 @@ import type { BoardContextType } from "@/types/ChessTypes.d.ts";
 import newBoardPositions from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
 import { subscribe } from "./EventsHandler.ts";
-import Board from '../components/Board';
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -24,7 +23,7 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
         });
     };
 
-    subscribe('updateState', updateState);
+    subscribe('update-state', updateState);
 
     return (
         <BoardStateContext.Provider value={boardState}>
