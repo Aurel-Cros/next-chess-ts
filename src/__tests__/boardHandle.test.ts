@@ -7,9 +7,9 @@ import newBoardPositions from "@/utils/resetBoardPositions.ts";
 describe('Basic board testing', () => {
     it("should create a new board according to player colour", () => {
         const expected: BoardPositionsType = {
-            row: [
+            rows: [
                 {
-                    column: [
+                    columns: [
                         new Rook(false),
                         new Knight(false),
                         new Bishop(false),
@@ -21,7 +21,7 @@ describe('Basic board testing', () => {
                     ]
                 },
                 {
-                    column: [
+                    columns: [
                         new Pawn(false),
                         new Pawn(false),
                         new Pawn(false),
@@ -32,12 +32,12 @@ describe('Basic board testing', () => {
                         new Pawn(false)
                     ]
                 },
-                { column: [] },
-                { column: [] },
-                { column: [] },
-                { column: [] },
+                { columns: [] },
+                { columns: [] },
+                { columns: [] },
+                { columns: [] },
                 {
-                    column: [
+                    columns: [
                         new Pawn(true),
                         new Pawn(true),
                         new Pawn(true),
@@ -49,7 +49,7 @@ describe('Basic board testing', () => {
                     ]
                 },
                 {
-                    column: [
+                    columns: [
                         new Rook(true),
                         new Knight(true),
                         new Bishop(true),
@@ -68,7 +68,7 @@ describe('Basic board testing', () => {
         // For some reason, toEqual doesn't match objects that are deeply equal ??
         expect(JSON.stringify(boardWhitePlayer)).toEqual(JSON.stringify(expected));
 
-        expected.row.reverse();
+        expected.rows.reverse();
 
         expect(JSON.stringify(boardBlackPlayer)).toEqual(JSON.stringify(expected));
     });

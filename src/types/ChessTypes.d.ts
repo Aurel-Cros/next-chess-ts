@@ -2,8 +2,8 @@
 import type { Pieces } from "@/pieces/Pieces.js";
 
 export type BoardPositionsType = {
-    row: Array<{
-        column: Array<Pieces>;
+    rows: Array<{
+        columns: Array<Pieces>;
     }>;
 };
 

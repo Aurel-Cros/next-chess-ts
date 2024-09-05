@@ -13,10 +13,6 @@ abstract class Piece implements PieceType {
         if (type === PiecesEnum.None)
             throw new Error("Can't create a piece with no type. Try instantiating a child piece class.");
     }
-
-    die() {
-        // Move this piece in graveyard
-    }
 }
 
 export class Rook extends Piece {

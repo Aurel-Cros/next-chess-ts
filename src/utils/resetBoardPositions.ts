@@ -3,9 +3,9 @@ import { Bishop, King, Knight, Pawn, Queen, Rook } from "@/components/Piece.ts";
 
 export default function newBoardPositions(playerIsWhite: boolean = true): BoardPositionsType {
     const board: BoardPositionsType = {
-        row: [
+        rows: [
             {
-                column: [
+                columns: [
                     new Rook(false),
                     new Knight(false),
                     new Bishop(false),
@@ -17,7 +17,7 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
                 ]
             },
             {
-                column: [
+                columns: [
                     new Pawn(false),
                     new Pawn(false),
                     new Pawn(false),
@@ -29,27 +29,27 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
                 ]
             },
             {
-                column: [
+                columns: [
                     '', '', '', '', '', '', '', ''
                 ]
             },
             {
-                column: [
+                columns: [
                     '', '', '', '', '', '', '', ''
                 ]
             },
             {
-                column: [
+                columns: [
                     '', '', '', '', '', '', '', ''
                 ]
             },
             {
-                column: [
+                columns: [
                     '', '', '', '', '', '', '', ''
                 ]
             },
             {
-                column: [
+                columns: [
                     new Pawn(true),
                     new Pawn(true),
                     new Pawn(true),
@@ -61,7 +61,7 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
                 ]
             },
             {
-                column: [
+                columns: [
                     new Rook(true),
                     new Knight(true),
                     new Bishop(true),
@@ -75,7 +75,7 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
         ]
     };
     if (!playerIsWhite)
-        board.row.reverse();
+        board.rows.reverse();
 
     return board;
 }
