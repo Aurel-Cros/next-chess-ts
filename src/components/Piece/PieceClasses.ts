@@ -18,9 +18,6 @@ abstract class Piece implements PieceType {
     }
 
     move(move: Coordinates): boolean {
-        const hasMove = this.moves.find(m => m.x === move.x && m.y === move.y);
-        if (!hasMove)
-            return false;
         if (!this.isMoveOnBoard(move))
             return false;
 
@@ -34,12 +31,7 @@ abstract class Piece implements PieceType {
     public getPossibleMoves(): Coordinates[] {
         return this.moves
             .filter((move: MoveType) => {
-                const newCoords = {
-                    x: this.coord.x + move.x,
-                    y: this.coord.y + move.y,
-                };
-                if (newCoords.x < 8 && newCoords.x >= 0 &&
-                    newCoords.y < 8 && newCoords.y >= 0 &&
+                if (this.isMoveOnBoard(move) &&
                     (move.condition === undefined || move.condition() === true))
                     return true;
                 return false;

@@ -42,11 +42,17 @@ export default function Board() {
                                 <p
                                     onClick={() => {
                                         if (isHighlighted) {
-                                            selectedPiece?.move({ x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y }) &&
-                                                dispatch('refresh-board', {});
-                                        }
+                                            if (!selectedPiece)
+                                                throw new Error("Selected piece should not be null if possible moves are highlighted wtf");
 
-                                        handlePieceSelect(piece ?? null);
+                                            const destination = { x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y };
+                                            if (selectedPiece.move(destination)) {
+                                                dispatch('refresh-board', {});
+                                                handlePieceSelect(null);
+                                            }
+                                        }
+                                        else
+                                            handlePieceSelect(piece ?? null);
                                     }}
                                     key={"col" + j}
                                     className={`${styles.item} ${caseCol} ${isHighlighted}`}>
