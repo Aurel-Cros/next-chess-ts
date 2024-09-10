@@ -5,7 +5,9 @@ abstract class Piece implements PieceType {
     public name: string = '';
     public colour: "Black" | "White";
     public type: PiecesEnum = 0;
+    public isAlive: boolean = true;
     public moves: MoveType[] = [];
+    public sprite: string = "";
 
     constructor(isWhite: boolean, type: PiecesEnum) {
         this.colour = isWhite ? "White" : "Black";
@@ -24,6 +26,7 @@ export class Rook extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} Rook`;
+        this.sprite = `${this.colour}Rook.png`;
         this.moves = [
             {
                 x: -1,
@@ -58,6 +61,7 @@ export class Bishop extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} Bishop`;
+        this.sprite = `${this.colour}Bishop.png`;
         this.moves = [
             {
                 x: -1,
@@ -92,6 +96,7 @@ export class Knight extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} Knight`;
+        this.sprite = `${this.colour}Knight.png`;
         this.moves = [
             {
                 x: -1,
@@ -146,6 +151,7 @@ export class Pawn extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} Pawn`;
+        this.sprite = `${this.colour}Pawn.png`;
         this.moves = [
             {
                 x: 0,
@@ -177,6 +183,7 @@ export class King extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} King`;
+        this.sprite = `${this.colour}King.png`;
         this.moves = [
             {
                 x: -1,
@@ -231,6 +238,7 @@ export class Queen extends Piece {
         super(isWhite, type);
         this.type = type;
         this.name = `${this.colour} Queen`;
+        this.sprite = `${this.colour}Queen.png`;
         this.moves = [
             {
                 x: -1,

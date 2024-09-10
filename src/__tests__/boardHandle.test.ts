@@ -1,7 +1,7 @@
 'use client';
 import type { BoardPositionsType } from "../types/ChessTypes.d.ts";
 import { it, describe, expect } from "vitest";
-import { Bishop, King, Knight, Pawn, Queen, Rook } from "../components/Piece.ts";
+import { Bishop, King, Knight, Pawn, Queen, Rook } from "../components/PieceClasses.ts";
 import newBoardPositions from "@/utils/resetBoardPositions.ts";
 
 describe('Basic board testing', () => {

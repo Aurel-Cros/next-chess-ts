@@ -1,9 +1,8 @@
 'use client';
-import type { Pieces } from "@/pieces/Pieces.js";
 
 export type BoardPositionsType = {
     rows: Array<{
-        columns: Array<Pieces>;
+        columns: Array<PieceType | null>;
     }>;
 };
 
@@ -20,6 +19,8 @@ export interface PieceType {
     public name: string;
     public colour: "Black" | "White";
     public type: PiecesEnum;
+    public isAlive: boolean;
+    public sprite: string;
     public moves: MoveType[];
 }
 

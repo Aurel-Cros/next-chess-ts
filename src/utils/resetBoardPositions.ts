@@ -1,5 +1,5 @@
-import type { BoardContextType, BoardPositionsType } from "@/types/ChessTypes.d.ts";
-import { Bishop, King, Knight, Pawn, Queen, Rook } from "@/components/Piece.ts";
+import type { BoardPositionsType } from "@/types/ChessTypes.d.ts";
+import { Bishop, King, Knight, Pawn, Queen, Rook } from "@/components/PieceClasses.ts";
 
 export default function newBoardPositions(playerIsWhite: boolean = true): BoardPositionsType {
     const board: BoardPositionsType = {
@@ -30,22 +30,22 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
             },
             {
                 columns: [
-                    '', '', '', '', '', '', '', ''
+                    null, null, null, null, null, null, null, null
                 ]
             },
             {
                 columns: [
-                    '', '', '', '', '', '', '', ''
+                    null, null, null, null, null, null, null, null
                 ]
             },
             {
                 columns: [
-                    '', '', '', '', '', '', '', ''
+                    null, null, null, null, null, null, null, null
                 ]
             },
             {
                 columns: [
-                    '', '', '', '', '', '', '', ''
+                    null, null, null, null, null, null, null, null
                 ]
             },
             {

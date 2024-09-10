@@ -4,6 +4,7 @@ import type { BoardContextType, PieceType } from "@/types/ChessTypes.d.ts";
 import { useContext } from "react";
 import styles from "./Board.module.css";
 import { dispatch } from "@/context/EventsHandler.ts";
+import Piece from "./Piece.tsx";
 
 export default function Board() {
     const boardState: BoardContextType = useContext(BoardStateContext);
@@ -20,14 +21,16 @@ export default function Board() {
         <>
             <div className={styles.board}>
                 {boardState.positions.rows.map((row: {
-                    columns: Array<PieceType>;
+                    columns: Array<PieceType | null>;
                 }, i) => {
                     return <div key={"row" + i} className={styles.row}>
-                        {row.columns.map((piece: PieceType, j) => {
+                        {row.columns.map((piece: PieceType | null, j) => {
 
                             const caseCol = caseColour(i, j) ? styles.black : styles.white;
 
-                            return <p key={"col" + j} className={`${styles.item} ${caseCol}`}>{piece.name ?? " "}</p>;
+                            return <p key={"col" + j} className={`${styles.item} ${caseCol}`}>
+                                {piece ? <Piece p={piece} /> : " "}
+                            </p>;
                         })}
                     </div>;
                 })}
