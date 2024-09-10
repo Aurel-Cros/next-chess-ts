@@ -2,7 +2,7 @@ export interface Subscriber {
     trigger(): void;
 }
 
-class EventsHandler {
+class EventsObserver {
     private subs: { [key: string]: Function[]; };
 
     constructor() {
@@ -22,6 +22,6 @@ class EventsHandler {
     }
 }
 
-const handler = new EventsHandler();
-export const dispatch = handler.dispatch.bind(handler);
-export const subscribe = handler.subscribe.bind(handler);
+const observer = new EventsObserver();
+export const dispatch = observer.dispatch.bind(observer);
+export const subscribe = observer.subscribe.bind(observer);
