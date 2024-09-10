@@ -1,9 +1,10 @@
 'use client';
 
 import type { BoardContextType } from "@/types/ChessTypes.d.ts";
-import newBoardPositions from "@/utils/resetBoardPositions.ts";
+import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
-import { subscribe } from "./EventsHandler.ts";
+import { subscribe } from "./EventsObserver.ts";
+import { PieceType } from '../types/ChessTypes';
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -23,7 +24,21 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
         });
     };
 
+    const refreshBoard = () => {
+        const pieces: PieceType[] = [];
+        boardState.positions.rows.forEach((row) => {
+
+            row.columns.forEach((c: PieceType | null) => {
+                if (c)
+                    pieces.push(c);
+            });
+        });
+        const newBoard = drawBoard(pieces);
+        updateState({ positions: newBoard, player: !boardState.player });
+    };
+
     subscribe('update-state', updateState);
+    subscribe('refresh-board', refreshBoard);
 
     return (
         <BoardStateContext.Provider value={boardState}>

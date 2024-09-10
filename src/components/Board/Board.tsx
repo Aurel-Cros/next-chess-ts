@@ -1,15 +1,29 @@
 'use client';
 import { BoardStateContext } from "@/context/BoardState";
-import type { BoardContextType, PieceType } from "@/types/ChessTypes.d.ts";
-import { useContext } from "react";
+import type { BoardContextType, Coordinates, MoveType, PieceType } from "@/types/ChessTypes.d.ts";
+import { useContext, useState } from "react";
 import styles from "./Board.module.css";
 import Piece from "@/components/Piece/Piece.tsx";
+import { dispatch } from "@/context/EventsObserver.ts";
 
 export default function Board() {
     const boardState: BoardContextType = useContext(BoardStateContext);
+    const [highlightCases, setHighlightCases] = useState([] as Coordinates[]);
+    const [selectedPiece, setSelectedPiece] = useState(null as (PieceType | null));
 
     const caseColour: Function = (i: number, j: number): boolean => {
         return (i + j) % 2 > 0;
+    };
+
+    const handlePieceSelect = (piece: PieceType | null) => {
+        if (piece === null) {
+            setHighlightCases([]);
+            setSelectedPiece(null);
+            return;
+        }
+        const possibleMoves = piece.getPossibleMoves();
+        setHighlightCases(possibleMoves);
+        setSelectedPiece(piece);
     };
 
     return (
@@ -22,10 +36,23 @@ export default function Board() {
                         {row.columns.map((piece: PieceType | null, j) => {
 
                             const caseCol = caseColour(i, j) ? styles.black : styles.white;
+                            const isHighlighted = highlightCases.find(c => (c.x === j && c.y === i)) ? styles.highlight : '';
 
-                            return <p key={"col" + j} className={`${styles.item} ${caseCol}`}>
-                                {piece ? <Piece p={piece} /> : " "}
-                            </p>;
+                            return (
+                                <p
+                                    onClick={() => {
+                                        if (isHighlighted) {
+                                            selectedPiece?.move({ x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y }) &&
+                                                dispatch('refresh-board', {});
+                                        }
+
+                                        handlePieceSelect(piece ?? null);
+                                    }}
+                                    key={"col" + j}
+                                    className={`${styles.item} ${caseCol} ${isHighlighted}`}>
+                                    {piece ? <Piece p={piece} /> : " "}
+                                </p>
+                            );
                         })}
                     </div>;
                 })}

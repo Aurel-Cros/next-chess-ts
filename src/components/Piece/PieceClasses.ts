@@ -1,4 +1,4 @@
-import type { MoveType, PieceType } from "@/types/ChessTypes.d.ts";
+import type { Coordinates, MoveType, PieceType } from "@/types/ChessTypes.d.ts";
 import { PiecesEnum } from '../../types/enums.ts';
 
 abstract class Piece implements PieceType {
@@ -8,7 +8,7 @@ abstract class Piece implements PieceType {
     public isAlive: boolean = true;
     public moves: MoveType[] = [];
     public sprite: string = "";
-    public coord: { x: number, y: number; } = { x: 0, y: 0 };
+    public coord: Coordinates = { x: 0, y: 0 };
 
     constructor(isWhite: boolean, type: PiecesEnum) {
         this.colour = isWhite ? "White" : "Black";
@@ -17,8 +17,63 @@ abstract class Piece implements PieceType {
             throw new Error("Can't create a piece with no type. Try instantiating a child piece class.");
     }
 
-    move(move: MoveType) {
-        
+    move(move: Coordinates): boolean {
+        const hasMove = this.moves.find(m => m.x === move.x && m.y === move.y);
+        if (!hasMove)
+            return false;
+        if (!this.isMoveOnBoard(move))
+            return false;
+
+        console.log(`Moving ${this.colour} ${this.name} from ${this.coord.x} ${this.coord.y}`);
+        this.coord.x += move.x;
+        this.coord.y += move.y;
+        console.log(`Moved to ${this.coord.x} ${this.coord.y}`);
+        return true;
+    }
+
+    public getPossibleMoves(): Coordinates[] {
+        return this.moves
+            .filter((move: MoveType) => {
+                const newCoords = {
+                    x: this.coord.x + move.x,
+                    y: this.coord.y + move.y,
+                };
+                if (newCoords.x < 8 && newCoords.x >= 0 &&
+                    newCoords.y < 8 && newCoords.y >= 0 &&
+                    (move.condition === undefined || move.condition() === true))
+                    return true;
+                return false;
+            })
+            .flatMap((move: MoveType) => {
+                if (!move.ranged)
+                    return {
+                        x: this.coord.x + move.x,
+                        y: this.coord.y + move.y,
+                    };
+
+                const buffer: Coordinates[] = [];
+                for (let i = 0; i < 8; i++) {
+                    buffer.push({
+                        x: this.coord.x + i * move.x,
+                        y: this.coord.y + i * move.y,
+                    });
+                }
+                return buffer;
+            });
+    }
+
+    isMoveOnBoard(move: Coordinates): boolean {
+
+        const new_x = this.coord.x + move.x;
+        const new_y = this.coord.y + move.y;
+
+        if (new_x < 0 ||
+            new_x > 7 ||
+            new_y < 0 ||
+            new_y > 7)
+            return false;
+
+        return true;
     }
 }
 
@@ -26,7 +81,7 @@ export class Rook extends Piece {
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhiteRook : PiecesEnum.BlackRook;
         super(isWhite, type);
         this.coord = coords;
@@ -62,7 +117,7 @@ export class Bishop extends Piece {
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhiteBishop : PiecesEnum.BlackBishop;
         super(isWhite, type);
         this.coord = coords;
@@ -98,7 +153,7 @@ export class Knight extends Piece {
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhiteKnight : PiecesEnum.BlackKnight;
         super(isWhite, type);
         this.coord = coords;
@@ -151,12 +206,14 @@ export class Knight extends Piece {
 }
 
 export class Pawn extends Piece {
+    direction: 1 | -1;
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, direction: 1 | -1, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhitePawn : PiecesEnum.BlackPawn;
         super(isWhite, type);
+        this.direction = direction;
         this.coord = coords;
         this.type = type;
         this.name = `${this.colour} Pawn`;
@@ -164,20 +221,26 @@ export class Pawn extends Piece {
         this.moves = [
             {
                 x: 0,
-                y: 1,
+                y: this.direction,
                 ranged: false,
+            },
+            {
+                x: 0,
+                y: this.direction * 2,
+                ranged: false,
+                condition: () => (this.direction === 1 && this.coord.y === 1) || (this.direction === -1 && this.coord.y === 6)
             },
             {
                 x: 1,
-                y: 1,
+                y: this.direction,
                 ranged: false,
-                condition: () => { }
+                condition: () => false
             },
             {
                 x: -1,
-                y: 1,
+                y: this.direction,
                 ranged: false,
-                condition: () => { }
+                condition: () => false
             },
         ];
     }
@@ -187,7 +250,7 @@ export class King extends Piece {
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhiteKing : PiecesEnum.BlackKing;
         super(isWhite, type);
         this.coord = coords;
@@ -243,7 +306,7 @@ export class Queen extends Piece {
     /**
      * @param isWhite: boolean defining the colour of the piece. true for white, false for black
      */
-    constructor(isWhite: boolean, coords: { x: number, y: number; } = { x: 0, y: 0 }) {
+    constructor(isWhite: boolean, coords: Coordinates = { x: 0, y: 0 }) {
         const type = isWhite ? PiecesEnum.WhiteQueen : PiecesEnum.BlackQueen;
         super(isWhite, type);
         this.coord = coords;
