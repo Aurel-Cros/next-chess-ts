@@ -21,6 +21,7 @@ export interface PieceType {
     public type: PiecesEnum;
     public isAlive: boolean;
     public sprite: string;
+    public coord: { x: number, y: number; };
     public moves: MoveType[];
 }
 
