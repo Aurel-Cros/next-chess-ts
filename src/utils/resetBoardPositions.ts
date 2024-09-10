@@ -3,39 +3,48 @@ import { Bishop, King, Knight, Pawn, Queen, Rook } from "@/components/Piece/Piec
 
 export default function newBoardPositions(playerIsWhite: boolean = true): BoardPositionsType {
     const pieces: PieceType[] = [
-        new Rook(false, { x: 0, y: 0 }),
-        new Knight(false, { x: 1, y: 0 }),
-        new Bishop(false, { x: 2, y: 0 }),
-        new Queen(false, { x: 3, y: 0 }),
-        new King(false, { x: 4, y: 0 }),
-        new Bishop(false, { x: 5, y: 0 }),
-        new Knight(false, { x: 6, y: 0 }),
-        new Rook(false, { x: 7, y: 0 }),
-        new Pawn(false, { x: 0, y: 1 }),
-        new Pawn(false, { x: 1, y: 1 }),
-        new Pawn(false, { x: 2, y: 1 }),
-        new Pawn(false, { x: 3, y: 1 }),
-        new Pawn(false, { x: 4, y: 1 }),
-        new Pawn(false, { x: 5, y: 1 }),
-        new Pawn(false, { x: 6, y: 1 }),
-        new Pawn(false, { x: 7, y: 1 }),
-        new Pawn(true, { x: 0, y: 6 }),
-        new Pawn(true, { x: 1, y: 6 }),
-        new Pawn(true, { x: 2, y: 6 }),
-        new Pawn(true, { x: 3, y: 6 }),
-        new Pawn(true, { x: 4, y: 6 }),
-        new Pawn(true, { x: 7, y: 6 }),
-        new Pawn(true, { x: 5, y: 6 }),
-        new Pawn(true, { x: 6, y: 6 }),
-        new Rook(true, { x: 0, y: 7 }),
-        new Knight(true, { x: 1, y: 7 }),
-        new Bishop(true, { x: 2, y: 7 }),
-        new Queen(true, { x: 3, y: 7 }),
-        new King(true, { x: 4, y: 7 }),
-        new Bishop(true, { x: 5, y: 7 }),
-        new Knight(true, { x: 6, y: 7 }),
-        new Rook(true, { x: 7, y: 7 }),
+        new Rook(!playerIsWhite, { x: 0, y: 0 }),
+        new Knight(!playerIsWhite, { x: 1, y: 0 }),
+        new Bishop(!playerIsWhite, { x: 2, y: 0 }),
+        new Queen(!playerIsWhite, { x: 3, y: 0 }),
+        new King(!playerIsWhite, { x: 4, y: 0 }),
+        new Bishop(!playerIsWhite, { x: 5, y: 0 }),
+        new Knight(!playerIsWhite, { x: 6, y: 0 }),
+        new Rook(!playerIsWhite, { x: 7, y: 0 }),
+        new Pawn(!playerIsWhite, 1, { x: 0, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 1, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 2, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 3, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 4, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 5, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 6, y: 1 }),
+        new Pawn(!playerIsWhite, 1, { x: 7, y: 1 }),
+        new Pawn(playerIsWhite, -1, { x: 0, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 1, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 2, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 3, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 4, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 7, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 5, y: 6 }),
+        new Pawn(playerIsWhite, -1, { x: 6, y: 6 }),
+        new Rook(playerIsWhite, { x: 0, y: 7 }),
+        new Knight(playerIsWhite, { x: 1, y: 7 }),
+        new Bishop(playerIsWhite, { x: 2, y: 7 }),
+        new Queen(playerIsWhite, { x: 3, y: 7 }),
+        new King(playerIsWhite, { x: 4, y: 7 }),
+        new Bishop(playerIsWhite, { x: 5, y: 7 }),
+        new Knight(playerIsWhite, { x: 6, y: 7 }),
+        new Rook(playerIsWhite, { x: 7, y: 7 }),
     ];
+
+    const board: BoardPositionsType = drawBoard(pieces);
+    if (!playerIsWhite)
+        board.rows.reverse();
+
+    return board;
+}
+
+export function drawBoard(pieces: PieceType[]): BoardPositionsType {
 
     const board: BoardPositionsType = {
         rows: []
@@ -50,8 +59,5 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
 
         board.rows.push({ columns });
     }
-    if (!playerIsWhite)
-        board.rows.reverse();
-
     return board;
 }
