@@ -15,6 +15,11 @@ export type BoardContextType = {
 };
 
 
+export interface Coordinates {
+    x: number;
+    y: number;
+}
+
 export interface PieceType {
     public name: string;
     public colour: "Black" | "White";
@@ -23,12 +28,12 @@ export interface PieceType {
     public sprite: string;
     public coord: { x: number, y: number; };
     public moves: MoveType[];
+    public move(m: Coordinates): boolean;
+    public getPossibleMoves(): Coordinates[];
 }
 
-export interface MoveType {
-    x: number;
-    y: number;
+export interface MoveType extends Coordinates {
     ranged: boolean;
-    condition?: Function;
+    condition?: () => boolean;
 }
 
