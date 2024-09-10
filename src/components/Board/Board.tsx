@@ -3,18 +3,13 @@ import { BoardStateContext } from "@/context/BoardState";
 import type { BoardContextType, PieceType } from "@/types/ChessTypes.d.ts";
 import { useContext } from "react";
 import styles from "./Board.module.css";
-import { dispatch } from "@/context/EventsHandler.ts";
-import Piece from "./Piece.tsx";
+import Piece from "@/components/Piece/Piece.tsx";
 
 export default function Board() {
     const boardState: BoardContextType = useContext(BoardStateContext);
 
     const caseColour: Function = (i: number, j: number): boolean => {
         return (i + j) % 2 > 0;
-    };
-
-    const handleNextPlayer = () => {
-        dispatch('update-state', { player: !boardState.player });
     };
 
     return (
@@ -36,6 +31,5 @@ export default function Board() {
                 })}
             </div>
             <p>It is {boardState.player ? 'white' : 'black'}'s turn to play.</p>
-            <p><button onClick={handleNextPlayer}>Next player</button></p>
         </>);
 }
