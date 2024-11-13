@@ -17,3 +17,8 @@ export enum PiecesEnum {
     BlackQueen = 25,
     BlackKing = 26,
 }
+
+export enum PlayerColour {
+    White = "White",
+    Black = "Black"
+}

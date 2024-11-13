@@ -5,14 +5,15 @@ import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
 import { subscribe } from "./EventsObserver.ts";
 import { PieceType } from '../types/ChessTypes';
+import { PlayerColour } from "@/types/enums.ts";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
-    player: true
+    player: PlayerColour.White
 } as BoardContextType);
 
 export default function BoardProvider({ children }: { children: React.ReactNode; }) {
-    const [boardState, setBoardState] = useState({ positions: newBoardPositions(), player: true });
+    const [boardState, setBoardState] = useState({ positions: newBoardPositions(), player: PlayerColour.White });
 
     const updateState = (newState: BoardContextType) => {
         setBoardState((oldState) => {
@@ -34,7 +35,10 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
             });
         });
         const newBoard = drawBoard(pieces);
-        updateState({ positions: newBoard, player: !boardState.player });
+        updateState({
+            positions: newBoard,
+            player: boardState.player === PlayerColour.White ? PlayerColour.Black : PlayerColour.White,
+        });
     };
 
     subscribe('update-state', updateState);

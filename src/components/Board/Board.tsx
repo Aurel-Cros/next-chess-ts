@@ -1,27 +1,32 @@
 'use client';
 import { BoardStateContext } from "@/context/BoardState";
-import type { BoardContextType, Coordinates, MoveType, PieceType } from "@/types/ChessTypes.d.ts";
+import type { BoardContextType, Coordinates } from "@/types/ChessTypes.d.ts";
 import { useContext, useState } from "react";
 import styles from "./Board.module.css";
 import Piece from "@/components/Piece/Piece.tsx";
 import { dispatch } from "@/context/EventsObserver.ts";
+import type { AbstractPiece } from "../../classes/Piece/AbstractPiece";
 
 export default function Board() {
-    const boardState: BoardContextType = useContext(BoardStateContext);
-    const [highlightCases, setHighlightCases] = useState([] as Coordinates[]);
-    const [selectedPiece, setSelectedPiece] = useState(null as (PieceType | null));
+    const boardState = useContext<BoardContextType>(BoardStateContext);
+    const [highlightCases, setHighlightCases] = useState<Coordinates[]>([]);
+    const [selectedPiece, setSelectedPiece] = useState<AbstractPiece | null>(null);
 
     const caseColour: Function = (i: number, j: number): boolean => {
         return (i + j) % 2 > 0;
     };
 
-    const handlePieceSelect = (piece: PieceType | null) => {
+    const handlePieceSelect = (piece: AbstractPiece | null) => {
         if (piece === null) {
             setHighlightCases([]);
             setSelectedPiece(null);
             return;
         }
-        const possibleMoves = piece.getPossibleMoves();
+
+        if (boardState.player !== piece.colour)
+            return;
+
+        const possibleMoves = piece.getPossibleMoves(boardState.positions);
         setHighlightCases(possibleMoves);
         setSelectedPiece(piece);
     };
@@ -30,10 +35,10 @@ export default function Board() {
         <>
             <div className={styles.board}>
                 {boardState.positions.rows.map((row: {
-                    columns: Array<PieceType | null>;
+                    columns: Array<AbstractPiece | null>;
                 }, i) => {
                     return <div key={"row" + i} className={styles.row}>
-                        {row.columns.map((piece: PieceType | null, j) => {
+                        {row.columns.map((piece: AbstractPiece | null, j) => {
 
                             const caseCol = caseColour(i, j) ? styles.black : styles.white;
                             const isHighlighted = highlightCases.find(c => (c.x === j && c.y === i)) ? styles.highlight : '';
@@ -45,8 +50,8 @@ export default function Board() {
                                             if (!selectedPiece)
                                                 throw new Error("Selected piece should not be null if possible moves are highlighted wtf");
 
-                                            const destination = { x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y };
-                                            if (selectedPiece.move(destination)) {
+                                            const destinationCoord = { x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y };
+                                            if (selectedPiece.move(destinationCoord, boardState.positions)) {
                                                 dispatch('refresh-board', {});
                                                 handlePieceSelect(null);
                                             }
@@ -63,6 +68,6 @@ export default function Board() {
                     </div>;
                 })}
             </div>
-            <p>It is {boardState.player ? 'white' : 'black'}'s turn to play.</p>
+            <p>It is {boardState.player}'s turn to play.</p>
         </>);
 }
