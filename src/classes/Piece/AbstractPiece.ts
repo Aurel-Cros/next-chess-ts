@@ -107,12 +107,16 @@ export abstract class AbstractPiece implements PieceInterface {
     /**
      * Make the move, verify player is not in check, then reverse the move, returning whether it is valid to perform.
      */
-    public previewMove(move: Coordinates, boardContext: BoardPositionsType): boolean {
+    public previewMove(move: Coordinates, boardContext: BoardPositionsType, moveIsTarget: boolean = false): boolean {
 
-        const destinationCoord = {
+        const oldCoords = { ...this.coord };
+        const destinationCoord = moveIsTarget ? move : {
             x: this.coord.x + move.x,
             y: this.coord.y + move.y,
         };
+
+        if (!this.isMoveOnBoard(destinationCoord))
+            return false;
 
         const destinationContent: AbstractPiece | null = boardContext.rows[destinationCoord.y].columns[destinationCoord.x];
 
@@ -136,8 +140,13 @@ export abstract class AbstractPiece implements PieceInterface {
             destinationContent.coord.y -= 10;
         }
 
-        this.coord.x -= move.x;
-        this.coord.y -= move.y;
+        if (!moveIsTarget) {
+            this.coord.x -= move.x;
+            this.coord.y -= move.y;
+        }
+        else {
+            this.coord = oldCoords;
+        }
 
         return !previewIsInCheck;
     }
@@ -163,9 +172,6 @@ export abstract class AbstractPiece implements PieceInterface {
 
         if (destinationContent === null)
             return true;
-
-        if (destinationContent.type === PiecesEnum.WhiteKing || destinationContent.type === PiecesEnum.BlackKing)
-            return false;
 
         if (destinationContent.colour !== this.colour)
             return true;

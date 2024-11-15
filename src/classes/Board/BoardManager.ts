@@ -1,6 +1,6 @@
-import { PiecesEnum, PlayerColour } from "@/types/enums";
+import { PiecesEnum, PlayerColour } from '@/types/enums';
 import { BoardPositionsType, Coordinates } from '../../types/ChessTypes';
-import type { AbstractPiece } from "../Piece/AbstractPiece";
+import { AbstractPiece } from "../Piece/AbstractPiece";
 
 export abstract class BoardManager {
 
@@ -51,5 +51,28 @@ export abstract class BoardManager {
         }
         );
         return isInCheck;
+    }
+
+    /**
+     * For a given player, try every possible move they can make to see if there is a solution to remove check.
+     */
+    public static isCheckMate(playerColour: PlayerColour, board: BoardPositionsType): boolean {
+
+        // Return early if there is no regular check
+        if (!BoardManager.isInCheck(playerColour, board))
+            return false;
+
+        // Get all player's remaining pieces
+        const playerPieces: AbstractPiece[] = board.rows.flatMap(row => row.columns.filter((piece: AbstractPiece | null) => piece?.isAlive && piece.colour === playerColour));
+
+        // Check all possible moves per piece
+        // If a move removes the check, return false early
+
+        for (const piece of playerPieces)
+            for (const move of piece.getPossibleMoves(board))
+                if (piece.previewMove(move, board, true))
+                    return false;
+
+        return true;
     }
 }

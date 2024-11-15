@@ -7,6 +7,7 @@ import { subscribe } from "./EventObserver.ts";
 import { PlayerColour } from "@/types/enums.ts";
 import type { AbstractPiece } from "@/classes/Piece/AbstractPiece.ts";
 import { BoardManager } from "@/classes/Board/BoardManager.ts";
+import { redirect } from "next/navigation";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -27,24 +28,22 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
     };
 
     const refreshBoard = () => {
-        const pieces: AbstractPiece[] = [];
-        boardState.positions.rows.forEach((row) => {
+        const pieces: AbstractPiece[] = boardState.positions.rows.flatMap((row) => row.columns.filter((p: AbstractPiece | null) => p && p.isAlive));
 
-            row.columns.forEach((c: AbstractPiece | null) => {
-                if (c)
-                    pieces.push(c);
-            });
-        });
         const newBoard = drawBoard(pieces);
-
-        if (BoardManager.isInCheck(boardState.player, newBoard))
-            console.log("CHECK !");
 
         updateState({
             positions: newBoard,
             player: boardState.player === PlayerColour.White ? PlayerColour.Black : PlayerColour.White,
         });
     };
+
+    if (BoardManager.isInCheck(boardState.player, boardState.positions))
+        console.log("CHECK !");
+
+    if (BoardManager.isCheckMate(boardState.player, boardState.positions))
+        console.log("CHECK MATE OMG.");
+
 
     subscribe('update-state', updateState);
     subscribe('refresh-board', refreshBoard);
