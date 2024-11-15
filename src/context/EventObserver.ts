@@ -16,7 +16,7 @@ class EventsObserver {
         this.subs[event].push(subscriber);
     }
 
-    dispatch(event: string, payload: unknown): void {
+    dispatch(event: string, payload?: unknown): void {
         if (this.subs[event])
             this.subs[event].forEach(sub => sub(payload));
     }
