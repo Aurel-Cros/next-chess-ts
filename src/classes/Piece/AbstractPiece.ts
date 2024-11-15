@@ -27,7 +27,6 @@ export abstract class AbstractPiece implements PieceInterface {
         if (!this.isMoveOnBoard(destinationCoord))
             return false;
 
-        console.log(`Moving ${this.colour} ${this.name} from ${this.coord.x} ${this.coord.y}`);
         this.coord.x += move.x;
         this.coord.y += move.y;
         this.hasMoved = true;
@@ -62,24 +61,28 @@ export abstract class AbstractPiece implements PieceInterface {
                     return movesToReturn;
 
 
-                if (this.isMoveAllowed(destinationContent))
-                    movesToReturn.push(destinationCoord);
-
-
-                if (!move.isRanged)
+                if (!move.isRanged) {
+                    if (this.isMoveAllowed(destinationContent))
+                        movesToReturn.push(destinationCoord);
                     return movesToReturn;
+                }
 
-                for (let i = 2; i < 8; i++) {
+                for (let i = 1; i < 8; i++) {
                     const rangedDestinationCoord = {
                         x: this.coord.x + i * move.x,
                         y: this.coord.y + i * move.y,
                     };
 
                     if (!this.isMoveOnBoard(rangedDestinationCoord))
-                        continue;
+                        break;
 
-                    if (this.isMoveAllowed(destinationContent))
+                    const rangedDestinationContent: AbstractPiece | null = currentBoardState.rows[rangedDestinationCoord.y].columns[rangedDestinationCoord.x];
+
+                    if (this.isMoveAllowed(rangedDestinationContent))
                         movesToReturn.push(rangedDestinationCoord);
+
+                    if (rangedDestinationContent !== null)
+                        break;
                 }
 
                 return movesToReturn;
