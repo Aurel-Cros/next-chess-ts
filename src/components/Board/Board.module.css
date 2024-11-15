@@ -27,6 +27,7 @@
     place-items: center;
     box-shadow: 1px 1px 1rem black;
     padding: 0.33rem;
+    border: 4px transparent;
 }
 
 .white {
@@ -43,4 +44,8 @@
 
 .highlight {
     border: 4px dashed black;
+}
+
+.inCheck {
+    border: 4px dashed crimson;
 }

@@ -4,8 +4,10 @@ import type { BoardContextType, Coordinates } from "@/types/ChessTypes.d.ts";
 import { useContext, useState } from "react";
 import styles from "./Board.module.css";
 import Piece from "@/components/Piece/Piece.tsx";
-import { dispatch } from "@/context/EventsObserver.ts";
+import { dispatch } from "@/context/EventObserver";
 import type { AbstractPiece } from "../../classes/Piece/AbstractPiece";
+import { PiecesEnum, PlayerColour } from "@/types/enums";
+import { BoardManager } from "@/classes/Board/BoardManager";
 
 export default function Board() {
     const boardState = useContext<BoardContextType>(BoardStateContext);
@@ -42,6 +44,10 @@ export default function Board() {
 
                             const caseCol = caseColour(i, j) ? styles.black : styles.white;
                             const isHighlighted = highlightCases.find(c => (c.x === j && c.y === i)) ? styles.highlight : '';
+                            const isInCheck =
+                                ((piece?.type === PiecesEnum.BlackKing && BoardManager.isInCheck(PlayerColour.Black, boardState.positions))
+                                    || (piece?.type === PiecesEnum.WhiteKing && BoardManager.isInCheck(PlayerColour.White, boardState.positions))) ?
+                                    styles.inCheck : '';
 
                             return (
                                 <p
@@ -52,7 +58,7 @@ export default function Board() {
 
                                             const destinationCoord = { x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y };
                                             if (selectedPiece.move(destinationCoord, boardState.positions)) {
-                                                dispatch('refresh-board', {});
+                                                dispatch('refresh-board');
                                                 handlePieceSelect(null);
                                             }
                                         }
@@ -60,7 +66,7 @@ export default function Board() {
                                             handlePieceSelect(piece ?? null);
                                     }}
                                     key={"col" + j}
-                                    className={`${styles.item} ${caseCol} ${isHighlighted}`}>
+                                    className={`${styles.item} ${caseCol} ${isHighlighted} ${isInCheck}`}>
                                     {piece ? <Piece p={piece} /> : " "}
                                 </p>
                             );
