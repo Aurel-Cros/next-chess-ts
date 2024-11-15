@@ -1,5 +1,7 @@
 import type { BoardPositionsType, Coordinates, MoveType, PieceInterface } from "@/types/ChessTypes.d.ts";
 import { PiecesEnum, PlayerColour } from '../../types/enums.ts';
+import { BoardManager } from "../Board/BoardManager.ts";
+import { drawBoard } from "@/utils/resetBoardPositions.ts";
 
 export abstract class AbstractPiece implements PieceInterface {
     public name: string = '';
@@ -19,6 +21,9 @@ export abstract class AbstractPiece implements PieceInterface {
             throw new Error("Can't create a piece with no type. Try instantiating a child piece class.");
     }
 
+    /**
+     * Perform given move and removes taken ennemy piece from play
+     */
     public move(move: Coordinates, boardContext: BoardPositionsType): boolean {
         const destinationCoord = {
             x: this.coord.x + move.x,
@@ -26,6 +31,11 @@ export abstract class AbstractPiece implements PieceInterface {
         };
         if (!this.isMoveOnBoard(destinationCoord))
             return false;
+
+        if (!this.previewMove(move, boardContext)) {
+            console.log("Still in check.");
+            return false;
+        }
 
         this.coord.x += move.x;
         this.coord.y += move.y;
@@ -41,6 +51,9 @@ export abstract class AbstractPiece implements PieceInterface {
         return true;
     }
 
+    /**
+     * Get list of possible moves for this piece with the current board positions
+     */
     public getPossibleMoves(currentBoardState: BoardPositionsType): Coordinates[] {
         const movesOnBoardWithRange = this.moves
             .flatMap((move: MoveType) => {
@@ -62,7 +75,7 @@ export abstract class AbstractPiece implements PieceInterface {
 
 
                 if (!move.isRanged) {
-                    if (this.isMoveAllowed(destinationContent))
+                    if (this.isDestinationValid(destinationContent))
                         movesToReturn.push(destinationCoord);
                     return movesToReturn;
                 }
@@ -78,7 +91,7 @@ export abstract class AbstractPiece implements PieceInterface {
 
                     const rangedDestinationContent: AbstractPiece | null = currentBoardState.rows[rangedDestinationCoord.y].columns[rangedDestinationCoord.x];
 
-                    if (this.isMoveAllowed(rangedDestinationContent))
+                    if (this.isDestinationValid(rangedDestinationContent))
                         movesToReturn.push(rangedDestinationCoord);
 
                     if (rangedDestinationContent !== null)
@@ -91,6 +104,47 @@ export abstract class AbstractPiece implements PieceInterface {
         return movesOnBoardWithRange;
     }
 
+    /**
+     * Make the move, verify player is not in check, then reverse the move, returning whether it is valid to perform.
+     */
+    public previewMove(move: Coordinates, boardContext: BoardPositionsType): boolean {
+
+        const destinationCoord = {
+            x: this.coord.x + move.x,
+            y: this.coord.y + move.y,
+        };
+
+        const destinationContent: AbstractPiece | null = boardContext.rows[destinationCoord.y].columns[destinationCoord.x];
+
+        this.coord = { ...destinationCoord };
+
+        const newState = drawBoard(boardContext.rows.flatMap(c => c.columns.filter(p => p !== null)));
+
+        let dcWasAlive = true;
+        if (destinationContent instanceof AbstractPiece) {
+            dcWasAlive = destinationContent.isAlive;
+            destinationContent.isAlive = false;
+            destinationContent.coord.x += 10;
+            destinationContent.coord.y += 10;
+        }
+
+        const previewIsInCheck = BoardManager.isInCheck(this.colour, newState);
+
+        if (destinationContent instanceof AbstractPiece) {
+            destinationContent.isAlive = dcWasAlive;
+            destinationContent.coord.x -= 10;
+            destinationContent.coord.y -= 10;
+        }
+
+        this.coord.x -= move.x;
+        this.coord.y -= move.y;
+
+        return !previewIsInCheck;
+    }
+
+    /**
+     * Check whether move stays on the board
+     */
     public isMoveOnBoard(targetCoords: Coordinates): boolean {
 
         if (targetCoords.x < 0 ||
@@ -102,10 +156,16 @@ export abstract class AbstractPiece implements PieceInterface {
         return true;
     }
 
-    public isMoveAllowed(destinationContent: AbstractPiece | null): boolean {
+    /**
+     * Check whether the target square is free or a takeable adversary piece
+     */
+    public isDestinationValid(destinationContent: AbstractPiece | null): boolean {
 
         if (destinationContent === null)
             return true;
+
+        if (destinationContent.type === PiecesEnum.WhiteKing || destinationContent.type === PiecesEnum.BlackKing)
+            return false;
 
         if (destinationContent.colour !== this.colour)
             return true;
