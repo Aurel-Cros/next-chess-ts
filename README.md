@@ -3,10 +3,10 @@
 This is a learning project, as well as a challenge to myself.
 
 The main goals are :
-- an intuitive UI, with the ability to drag & drop pieces on the board
-- possible moves highlighted when picking a piece up
-- a brute force "AI" (in the sense of, an artifical adversary, not based on actual AI)
-  - customizable depth of analysis
+- [x] possible moves highlighted when picking a piece up
+- [ ] an intuitive UI, with the ability to drag & drop pieces on the board
+- [ ] a brute force "AI" (in the sense of, an artifical adversary, not based on actual AI)
+  - [ ] customizable depth of analysis
 
 ## Getting Started
 
