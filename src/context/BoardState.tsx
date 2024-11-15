@@ -3,9 +3,10 @@
 import type { BoardContextType } from "@/types/ChessTypes.d.ts";
 import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
-import { subscribe } from "./EventsObserver.ts";
-import { PieceType } from '../types/ChessTypes';
+import { subscribe } from "./EventObserver.ts";
 import { PlayerColour } from "@/types/enums.ts";
+import type { AbstractPiece } from "@/classes/Piece/AbstractPiece.ts";
+import { BoardManager } from "@/classes/Board/BoardManager.ts";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -26,15 +27,19 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
     };
 
     const refreshBoard = () => {
-        const pieces: PieceType[] = [];
+        const pieces: AbstractPiece[] = [];
         boardState.positions.rows.forEach((row) => {
 
-            row.columns.forEach((c: PieceType | null) => {
+            row.columns.forEach((c: AbstractPiece | null) => {
                 if (c)
                     pieces.push(c);
             });
         });
         const newBoard = drawBoard(pieces);
+
+        if (BoardManager.isInCheck(boardState.player, newBoard))
+            console.log("CHECK !");
+
         updateState({
             positions: newBoard,
             player: boardState.player === PlayerColour.White ? PlayerColour.Black : PlayerColour.White,
