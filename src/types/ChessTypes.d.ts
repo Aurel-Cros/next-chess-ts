@@ -1,5 +1,6 @@
 'use client';
 
+import type { AbstractPiece } from "@/classes/Piece/AbstractPiece";
 import type { PlayerColour } from "./enums";
 
 export type BoardPositionsType = {

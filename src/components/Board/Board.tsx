@@ -77,6 +77,6 @@ export default function Board() {
                     </div>;
                 })}
             </div>
-            <p>It is {boardState.player}'s turn to play.</p>
+            <p className={styles.turnIndicator}>{boardState.player} to play</p>
         </>);
 }
