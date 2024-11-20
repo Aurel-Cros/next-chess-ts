@@ -1,0 +1,22 @@
+.navBar {
+    display: flex;
+    gap: 1rem;
+}
+
+.navBtn {
+    border: none;
+    font-variant: small-caps;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: inset 2px 2px transparent;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:active {
+        background-color: lightslategrey;
+        color: ivory;
+        scale: 0.975;
+    }
+}

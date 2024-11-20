@@ -3,11 +3,10 @@
 import type { BoardContextType } from "@/types/ChessTypes.d.ts";
 import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
-import { subscribe } from "./EventObserver.ts";
+import { dispatch, subscribe } from "./EventObserver.ts";
 import { PlayerColour } from "@/types/enums.ts";
 import type { AbstractPiece } from "@/classes/Piece/AbstractPiece.ts";
 import { BoardManager } from "@/classes/Board/BoardManager.ts";
-import { redirect } from "next/navigation";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -15,9 +14,10 @@ export const BoardStateContext: Context<BoardContextType> = createContext({
 } as BoardContextType);
 
 export default function BoardProvider({ children }: { children: React.ReactNode; }) {
-    const [boardState, setBoardState] = useState({ positions: newBoardPositions(), player: PlayerColour.White });
+    const startingState: BoardContextType = { positions: newBoardPositions(), player: PlayerColour.White };
+    const [boardState, setBoardState] = useState<BoardContextType>(startingState);
 
-    const updateState = (newState: BoardContextType) => {
+    const updateBoardState = (newState: BoardContextType) => {
         setBoardState((oldState) => {
             const state = {
                 ...oldState,
@@ -32,7 +32,7 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
 
         const newBoard = drawBoard(pieces);
 
-        updateState({
+        updateBoardState({
             positions: newBoard,
             player: boardState.player === PlayerColour.White ? PlayerColour.Black : PlayerColour.White,
         });
@@ -45,8 +45,9 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
         console.log("CHECK MATE OMG.");
 
 
-    subscribe('update-state', updateState);
+    subscribe('update-state', updateBoardState);
     subscribe('refresh-board', refreshBoard);
+    subscribe('reset-board', () => updateBoardState(startingState));
 
     return (
         <BoardStateContext.Provider value={boardState}>
