@@ -4,7 +4,7 @@ import type { BoardContextType } from "@/types/ChessTypes.d.ts";
 import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
 import { dispatch, subscribe } from "./EventObserver.ts";
-import { PlayerColour } from "@/types/enums.ts";
+import { ContextEvent, GameStatus, PlayerColour } from "@/types/enums.ts";
 import type { AbstractPiece } from "@/classes/Piece/AbstractPiece.ts";
 import { BoardManager } from "@/classes/Board/BoardManager.ts";
 
@@ -38,16 +38,16 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
         });
     };
 
-    if (BoardManager.isInCheck(boardState.player, boardState.positions))
-        console.log("CHECK !");
-
     if (BoardManager.isCheckMate(boardState.player, boardState.positions))
-        console.log("CHECK MATE OMG.");
+        dispatch(ContextEvent.STATUS, boardState.player === PlayerColour.White ? GameStatus.BlackWin : GameStatus.WhiteWin);
 
 
-    subscribe('update-state', updateBoardState);
-    subscribe('refresh-board', refreshBoard);
-    subscribe('reset-board', () => updateBoardState(startingState));
+    subscribe(ContextEvent.UPDATE, updateBoardState);
+    subscribe(ContextEvent.REFRESH, refreshBoard);
+    subscribe(ContextEvent.RESET, () => {
+        updateBoardState(startingState);
+        dispatch(ContextEvent.STATUS, null);
+    });
 
     return (
         <BoardStateContext.Provider value={boardState}>

@@ -22,3 +22,19 @@ export enum PlayerColour {
     White = "White",
     Black = "Black"
 }
+
+export enum ContextEvent {
+    RESET = 'reset-board',
+    UPDATE = 'update-state',
+    REFRESH = 'refresh-board',
+    STATUS = 'update-status',
+    FORFEIT = 'player-forfeit'
+}
+
+export enum GameStatus {
+    WhiteWin = 'White player won by mat',
+    BlackWin = 'Black player won by mat',
+    WhiteFF = 'White player forfeited',
+    BlackFF = 'Black player forfeited',
+    MoveInvalid = `Can't do that !`
+}
