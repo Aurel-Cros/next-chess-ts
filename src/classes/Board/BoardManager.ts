@@ -1,5 +1,5 @@
 import { PiecesEnum, PlayerColour } from '@/types/enums';
-import { BoardPositionsType, Coordinates } from '../../types/ChessTypes';
+import { BoardPositionsType } from '../../types/ChessTypes';
 import { AbstractPiece } from "../Piece/AbstractPiece";
 
 export abstract class BoardManager {
@@ -13,43 +13,46 @@ export abstract class BoardManager {
          * Exception made for pawns that cannot take while moving straight. 
          */
 
-        board.rows.forEach(row => {
+        rows: for (const row of board.rows) {
             if (isInCheck)
-                return;
+                break;
 
-            row.columns.forEach((piece: AbstractPiece | null) => {
+            for (const piece of row.columns) {
                 if (isInCheck || !piece || piece.colour === playerColour)
-                    return;
+                    continue;
 
                 const pieceMoves = piece.getPossibleMoves(board);
                 if (pieceMoves.length === 0)
-                    return;
+                    continue;
 
-                pieceMoves.forEach((move: Coordinates) => {
+                for (const move of pieceMoves) {
 
                     // Pawns moving forward are harmless
                     if ((piece.type === PiecesEnum.BlackPawn || piece.type === PiecesEnum.WhitePawn)
                         && move.x === 0)
-                        return;
+                        continue;
 
                     if (!piece.isMoveOnBoard(move))
-                        return;
+                        continue;
 
                     const destination: AbstractPiece | null = board.rows[move.y].columns[move.x];
 
                     if (!destination)
-                        return;
+                        continue;
 
-                    if (destination.type === PiecesEnum.BlackKing && playerColour === PlayerColour.Black)
+                    if (destination.type === PiecesEnum.BlackKing && playerColour === PlayerColour.Black) {
                         isInCheck = true;
+                        break rows;
+                    }
 
-                    if (destination.type === PiecesEnum.WhiteKing && playerColour === PlayerColour.White)
+                    if (destination.type === PiecesEnum.WhiteKing && playerColour === PlayerColour.White) {
                         isInCheck = true;
-                });
-
-            });
+                        break rows;
+                    }
+                };
+            }
         }
-        );
+
         return isInCheck;
     }
 
@@ -63,15 +66,16 @@ export abstract class BoardManager {
             return false;
 
         // Get all player's remaining pieces
-        const playerPieces: AbstractPiece[] = board.rows.flatMap(row => row.columns.filter((piece: AbstractPiece | null) => piece?.isAlive && piece.colour === playerColour));
+        const playerPieces: (AbstractPiece | null)[] = board.rows.flatMap(row => row.columns.filter((piece: AbstractPiece | null) => piece && piece?.isAlive && piece.colour === playerColour));
 
         // Check all possible moves per piece
         // If a move removes the check, return false early
 
         for (const piece of playerPieces)
-            for (const move of piece.getPossibleMoves(board))
-                if (piece.previewMove(move, board, true))
-                    return false;
+            if (piece)
+                for (const move of piece.getPossibleMoves(board))
+                    if (piece.previewMove(move, board))
+                        return false;
 
         return true;
     }
