@@ -2,6 +2,7 @@ import type { BoardPositionsType, Coordinates, MoveType, PieceInterface } from "
 import { PiecesEnum, PlayerColour } from '../../types/enums.ts';
 import { BoardManager } from "../Board/BoardManager.ts";
 import { drawBoard } from "@/utils/resetBoardPositions.ts";
+import Piece from "@/components/Piece/Piece.tsx";
 
 export abstract class AbstractPiece implements PieceInterface {
     public name: string = '';
@@ -43,7 +44,7 @@ export abstract class AbstractPiece implements PieceInterface {
 
         const destinationContent: AbstractPiece | null = boardContext.rows[destinationCoord.y].columns[destinationCoord.x];
 
-        if (destinationContent !== null) {
+        if (destinationContent !== null && destinationContent.colour !== this.colour) {
             destinationContent.isAlive = false;
             destinationContent.coord = { x: -1, y: -1 };
         }
@@ -94,14 +95,24 @@ export abstract class AbstractPiece implements PieceInterface {
                     if (this.isDestinationValid(rangedDestinationContent))
                         movesToReturn.push(rangedDestinationCoord);
 
-                    if (rangedDestinationContent !== null)
+                    if (rangedDestinationContent !== null) {
+                        if (this.moveException(rangedDestinationContent))
+                            movesToReturn.push(rangedDestinationCoord);
                         break;
+                    }
                 }
 
                 return movesToReturn;
             });
 
         return movesOnBoardWithRange;
+    }
+
+    /**
+     * Checks for particular rules like king's rock
+     */
+    public moveException(rangedDestContent: AbstractPiece): boolean {
+        return false;
     }
 
     /**
