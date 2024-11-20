@@ -33,7 +33,7 @@ export abstract class AbstractPiece implements PieceInterface {
         if (!this.isMoveOnBoard(destinationCoord))
             return false;
 
-        if (!this.previewMove(move, boardContext)) {
+        if (!this.previewMove(destinationCoord, boardContext)) {
             console.log("Still in check.");
             return false;
         }
@@ -118,13 +118,9 @@ export abstract class AbstractPiece implements PieceInterface {
     /**
      * Make the move, verify player is not in check, then reverse the move, returning whether it is valid to perform.
      */
-    public previewMove(move: Coordinates, boardContext: BoardPositionsType, moveIsTarget: boolean = false): boolean {
+    public previewMove(destinationCoord: Coordinates, boardContext: BoardPositionsType): boolean {
 
         const oldCoords = { ...this.coord };
-        const destinationCoord = moveIsTarget ? move : {
-            x: this.coord.x + move.x,
-            y: this.coord.y + move.y,
-        };
 
         if (!this.isMoveOnBoard(destinationCoord))
             return false;
@@ -132,8 +128,6 @@ export abstract class AbstractPiece implements PieceInterface {
         const destinationContent: AbstractPiece | null = boardContext.rows[destinationCoord.y].columns[destinationCoord.x];
 
         this.coord = { ...destinationCoord };
-
-        const newState = drawBoard(boardContext.rows.flatMap(c => c.columns.filter(p => p !== null)));
 
         let dcWasAlive = true;
         if (destinationContent instanceof AbstractPiece) {
@@ -143,6 +137,7 @@ export abstract class AbstractPiece implements PieceInterface {
             destinationContent.coord.y += 10;
         }
 
+        const newState = drawBoard(boardContext.rows.flatMap(row => row.columns.filter(p => p !== null)));
         const previewIsInCheck = BoardManager.isInCheck(this.colour, newState);
 
         if (destinationContent instanceof AbstractPiece) {
@@ -151,13 +146,7 @@ export abstract class AbstractPiece implements PieceInterface {
             destinationContent.coord.y -= 10;
         }
 
-        if (!moveIsTarget) {
-            this.coord.x -= move.x;
-            this.coord.y -= move.y;
-        }
-        else {
-            this.coord = oldCoords;
-        }
+        this.coord = oldCoords;
 
         return !previewIsInCheck;
     }
