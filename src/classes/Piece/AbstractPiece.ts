@@ -1,6 +1,6 @@
 import type { BoardPositionsType, Coordinates, MoveType, PieceInterface } from "@/types/ChessTypes.d.ts";
 import { PiecesEnum, PlayerColour } from '../../types/enums.ts';
-import { BoardManager } from "../Board/BoardManager.ts";
+import { CheckValidator } from "../Board/CheckValidator.ts";
 import { drawBoard } from "@/utils/resetBoardPositions.ts";
 import Piece from "@/components/Piece/Piece.tsx";
 
@@ -138,7 +138,7 @@ export abstract class AbstractPiece implements PieceInterface {
         }
 
         const newState = drawBoard(boardContext.rows.flatMap(row => row.columns.filter(p => p !== null)));
-        const previewIsInCheck = BoardManager.isInCheck(this.colour, newState);
+        const previewIsInCheck = CheckValidator.isInCheck(this.colour, newState);
 
         if (destinationContent instanceof AbstractPiece) {
             destinationContent.isAlive = dcWasAlive;

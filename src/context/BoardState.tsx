@@ -4,9 +4,10 @@ import type { BoardContextType } from "@/types/ChessTypes.d.ts";
 import newBoardPositions, { drawBoard } from "@/utils/resetBoardPositions.ts";
 import { createContext, useState, type Context } from "react";
 import { dispatch, subscribe } from "./EventObserver.ts";
-import { ContextEvent, GameStatus, PlayerColour } from "@/types/enums.ts";
+import { ContextEvent, GameStatus, PiecesEnum, PlayerColour } from "@/types/enums.ts";
 import type { AbstractPiece } from "@/classes/Piece/AbstractPiece.ts";
 import { BoardManager } from "@/classes/Board/BoardManager.ts";
+import { Queen } from "@/classes/Piece/Queen.ts";
 
 export const BoardStateContext: Context<BoardContextType> = createContext({
     positions: newBoardPositions(),
@@ -28,7 +29,16 @@ export default function BoardProvider({ children }: { children: React.ReactNode;
     };
 
     const refreshBoard = () => {
-        const pieces: AbstractPiece[] = boardState.positions.rows.flatMap((row) => row.columns.filter((p: AbstractPiece | null) => p && p.isAlive));
+        const pieces: AbstractPiece[] = boardState.positions.rows.flatMap((row) => row.columns.filter((p: AbstractPiece | null) => p && p.isAlive)).filter(p => p !== null);
+
+        /* Promote pawns before re-draw */
+        pieces.forEach((piece, i) => {
+            if (piece.type !== PiecesEnum.WhitePawn && piece.type !== PiecesEnum.BlackPawn)
+                return;
+
+            if (piece.coord.y === 7 || piece.coord.y === 0)
+                pieces[i] = new Queen(piece.colour, piece.coord);
+        });
 
         const newBoard = drawBoard(pieces);
 

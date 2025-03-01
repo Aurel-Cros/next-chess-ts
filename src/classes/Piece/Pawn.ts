@@ -1,6 +1,7 @@
-import type { Coordinates } from "@/types/ChessTypes.d.ts";
+import type { BoardPositionsType, Coordinates } from "@/types/ChessTypes.d.ts";
 import { PiecesEnum, PlayerColour } from '../../types/enums.ts';
 import { AbstractPiece } from "./AbstractPiece.ts";
+import { Queen } from "./Queen.ts";
 
 export class Pawn extends AbstractPiece {
     direction: 1 | -1;
