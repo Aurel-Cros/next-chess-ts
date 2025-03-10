@@ -1,7 +1,7 @@
-import type { PieceType } from "@/types/ChessTypes.js";
 import styles from './Piece.module.css';
+import type { AbstractPiece } from "@/classes/Piece/AbstractPiece";
 
-export default function Piece({ p }: { p: PieceType; }) {
+export default function Piece({ p }: { p: AbstractPiece; }) {
     if (!p.isAlive)
         throw new Error('Cannot display a piece that is off the game.');
 

@@ -1,14 +1,15 @@
+import type { AbstractPiece } from "@/classes/Piece/AbstractPiece";
 import { Bishop } from "@/classes/Piece/Bishop";
 import { King } from "@/classes/Piece/King";
 import { Knight } from "@/classes/Piece/Knight";
 import { Pawn } from "@/classes/Piece/Pawn";
 import { Queen } from "@/classes/Piece/Queen";
 import { Rook } from "@/classes/Piece/Rook";
-import type { BoardPositionsType, PieceType } from "@/types/ChessTypes.d.ts";
+import type { BoardPositionsType } from "@/types/ChessTypes.d.ts";
 import { PlayerColour } from "@/types/enums";
 
 export default function newBoardPositions(playerIsWhite: boolean = true): BoardPositionsType {
-    const pieces: PieceType[] = [
+    const pieces: AbstractPiece[] = [
         new Rook(PlayerColour.Black, { x: 0, y: 0 }),
         new Knight(PlayerColour.Black, { x: 1, y: 0 }),
         new Bishop(PlayerColour.Black, { x: 2, y: 0 }),
@@ -50,14 +51,14 @@ export default function newBoardPositions(playerIsWhite: boolean = true): BoardP
     return board;
 }
 
-export function drawBoard(pieces: PieceType[]): BoardPositionsType {
+export function drawBoard(pieces: AbstractPiece[]): BoardPositionsType {
 
     const board: BoardPositionsType = {
         rows: []
     };
 
     for (let i = 0; i < 8; i++) {
-        const columns: Array<PieceType | null> = [];
+        const columns: Array<AbstractPiece | null> = [];
 
         for (let j = 0; j < 8; j++) {
             columns.push(pieces.find(piece => piece.coord.x === j && piece.coord.y === i) ?? null);
