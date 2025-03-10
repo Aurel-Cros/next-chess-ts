@@ -1,3 +1,5 @@
+import type { ContextEvent } from "@/types/enums";
+
 export interface Subscriber {
     trigger(): void;
 }
@@ -9,14 +11,14 @@ class EventsObserver {
         this.subs = {};
     }
 
-    subscribe(event: string, subscriber: Function) {
+    subscribe(event: ContextEvent, subscriber: Function) {
         if (!this.subs[event])
             this.subs[event] = [];
 
         this.subs[event].push(subscriber);
     }
 
-    dispatch(event: string, payload?: unknown): void {
+    dispatch(event: ContextEvent, payload?: unknown): void {
         if (this.subs[event])
             this.subs[event].forEach(sub => sub(payload));
     }

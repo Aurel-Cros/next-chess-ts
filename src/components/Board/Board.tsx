@@ -6,8 +6,9 @@ import styles from "./Board.module.css";
 import Piece from "@/components/Piece/Piece.tsx";
 import { dispatch } from "@/context/EventObserver";
 import type { AbstractPiece } from "../../classes/Piece/AbstractPiece";
-import { PiecesEnum, PlayerColour } from "@/types/enums";
+import { ContextEvent, GameStatus, PiecesEnum, PlayerColour } from "@/types/enums";
 import { BoardManager } from "@/classes/Board/BoardManager";
+import toast from "react-hot-toast";
 
 export default function Board() {
     const boardState = useContext<BoardContextType>(BoardStateContext);
@@ -58,9 +59,11 @@ export default function Board() {
 
                                             const destinationCoord = { x: j - selectedPiece.coord.x, y: i - selectedPiece.coord.y };
                                             if (selectedPiece.move(destinationCoord, boardState.positions)) {
-                                                dispatch('refresh-board');
+                                                dispatch(ContextEvent.REFRESH);
                                                 handlePieceSelect(null);
                                             }
+                                            else
+                                                toast.error(GameStatus.MoveInvalid);
                                         }
                                         else
                                             handlePieceSelect(piece ?? null);
@@ -74,6 +77,6 @@ export default function Board() {
                     </div>;
                 })}
             </div>
-            <p>It is {boardState.player}'s turn to play.</p>
+            <p className={styles.turnIndicator}>{boardState.player} to play</p>
         </>);
 }
